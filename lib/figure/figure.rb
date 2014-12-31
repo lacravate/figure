@@ -31,6 +31,8 @@ class Figure < Hash
 
   end
 
+  CONFIG_GLOBS = %w|**/*figure.yml **/figure/*.yml **/gaston/*.yml|
+
   def initialize
     @config_directory = self.class.config_directory
     @figure_out = {}
@@ -38,19 +40,12 @@ class Figure < Hash
   end
 
   def store!
-    Dir[
-      config_directory.join('**/*figure.yml'),
-      config_directory.join('**/figure/*.yml'),
-      config_directory.join('**/gaston/*.yml')
-    ].map { |file|Pathname.new file }.each do |conf|
+    config_files.each do |conf|
       name = conf.basename.to_s.sub('.yml', '').sub('.figure', '')
-      data = YAML.load conf.read
 
-      instance_variable_set "@#{name}", new_store(name, data)
-
-      define_singleton_method name.to_sym do
-        figure_out instance_variable_get("@#{name}")
-      end
+      self[name] = new_store name, YAML.load(conf.read)
+    end
+  end
 
   def []=(k, v)
     super.tap do |value|
@@ -72,6 +67,12 @@ class Figure < Hash
 
   def config_directory
     @config_directory ||= defined?(Rails) ? Rails.root.join('config') : ascend_path
+  end
+
+  def config_files
+    Dir[ *CONFIG_GLOBS.map { |glob| config_directory.join(glob) } ].map do |file|
+      Pathname.new file
+    end
   end
 
   def ascend_path
