@@ -41,22 +41,12 @@ class Figure
         self[:default] = default_store(default) if default
       end
 
-      merge! h
-    end
+  class << self
 
-    def []=(k, v)
-      unless respond_to? k
-        that = self
-        self.class.send :define_method, k, Proc.new {
-          begin
-            @current_default = that; self[k]
-          rescue => e
-            binding.pry
-          end
-        }
-      end
+    attr_reader :config_directory
 
-      super
+    def configure
+      yield self
     end
 
     def config_directory=(path)
