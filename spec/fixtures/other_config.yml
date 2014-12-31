@@ -1,0 +1,12 @@
+:default:
+  :plop: 'plop'
+  :plip: 'plip'
+
+:foo:
+  :plop: 'plawp'
+  :plip: 'pleep'
+
+:bar:
+  :plop: 'plowp'
+
+:baz: {}

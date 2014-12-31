@@ -1,0 +1,22 @@
+:default:
+  :plop: 'plop'
+  :plip: 'plip'
+  :more:
+    :nested:
+      :inherited:
+        :value: 'inherited'
+
+:foo:
+  :plop: 'plawp'
+  :plip: 'pleep'
+
+:bar:
+  :plop: 'plowp'
+
+:baz: {}
+
+:much:
+  :more:
+    :nested:
+      :defined:
+        :value: 'value'

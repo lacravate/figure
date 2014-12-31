@@ -1,0 +1,6 @@
+:gaston:
+  :is_parsed: true
+  :inherits_gaston_default: true
+
+:namespace:
+  :is_parsed: 'namespace'
