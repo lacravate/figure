@@ -101,7 +101,7 @@ class Figure
       config_directory.join('**/figure/*.yml'),
       config_directory.join('**/gaston/*.yml')
     ].map { |file|Pathname.new file }.each do |conf|
-      name = conf.basename.to_s.sub '.yml', ''
+      name = conf.basename.to_s.sub('.yml', '').sub('.figure', '')
       data = YAML.load conf.read
 
       instance_variable_set "@#{name}", new_store(name, data)
