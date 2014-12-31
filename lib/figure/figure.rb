@@ -67,6 +67,15 @@ class Figure
       end
     end
 
+    def method_missing(*args, m)
+      if @instantiated
+        super
+      else
+        @instantiated = instance
+        send m
+      end
+    end
+
     def default_store(data)
       new_store(:default, data, self.class)
     end
@@ -98,6 +107,10 @@ class Figure
 
       define_singleton_method name.to_sym do
         figure_out instance_variable_get("@#{name}")
+      end
+
+      self.class.define_singleton_method name.to_sym do
+        instance.send name
       end
     end
   end
