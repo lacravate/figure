@@ -115,7 +115,7 @@ class Figure
   private
 
   def figure_out(store)
-    @figure_out[store] ||= store.respond_to?(env) ? store.send(env) : store
+    @figure_out[store] ||= store.respond_to?(env.to_s) ? store.send(env) : store
   end
 
   def env
