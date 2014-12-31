@@ -59,8 +59,8 @@ class Figure
       super
     end
 
-    def default(k)
-      @current_default[k]
+    def config_directory=(path)
+      @config_directory = Pathname.new path
     end
 
     def merge!(h)
@@ -90,15 +90,16 @@ class Figure
   attr_reader :config
 
   def initialize
+    @config_directory = self.class.config_directory
     @figure_out = {}
     store!
   end
 
   def store!
     Dir[
-      config.join('**/*figure.yml'),
-      config.join('**/figure/*.yml'),
-      config.join('**/gaston/*.yml')
+      config_directory.join('**/*figure.yml'),
+      config_directory.join('**/figure/*.yml'),
+      config_directory.join('**/gaston/*.yml')
     ].map { |file|Pathname.new file }.each do |conf|
       name = conf.basename.to_s.sub '.yml', ''
       data = YAML.load conf.read
@@ -121,14 +122,14 @@ class Figure
     defined?(Rails) ? Rails.env : nil
   end
 
-  def config
-    @config ||= defined?(Rails) ? Rails.root.join('config') : ascend_path
+  def config_directory
+    @config_directory ||= defined?(Rails) ? Rails.root.join('config') : ascend_path
   end
 
   def ascend_path
     Pathname.new(__FILE__).ascend do |path|
-      @config ||= path.join('config') if path.join('config').exist?
-      @config ||= path if path.join('figure.yml').exist?
+      @config_directory ||= path.join('config') if path.join('config').exist?
+      @config_directory ||= path if path.join('figure.yml').exist?
     end
   end
 
