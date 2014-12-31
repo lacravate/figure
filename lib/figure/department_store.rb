@@ -1,13 +1,12 @@
-class Figure
+class Figure < Hash
 
   module DepartmentStore
 
     private
 
-    def new_store(k, v={}, parent_klass=Figure::Store)
-      name = parent_klass.name.split('::').last == "Default" ? "Default" : k.to_s.capitalize
-
-      store_klass(parent_klass, name).new v
+    def new_store(k, v={}, parent_klass=Figure::Figurine)
+      @default_type = k == :default
+      store_klass(parent_klass, k.to_s.capitalize).new v
     end
 
     def store_klass(parent_klass, name)
@@ -18,14 +17,16 @@ class Figure
 
     def default_klass(parent_klass, name)
       figure, store, namespace, *depths = parent_klass.name.split('::')
-      if namespace && name != "Default"
-        store = Figure::Store.const_get namespace
-        depths.push('').inject(store) do |constant, child|
-          constant.const_get :Default
+
+      default = if namespace && !@default_type
+        (depths << name)[0] = "Default"
+
+        [figure, store, namespace, *depths].inject(Object) do |constant, child|
+          constant.const_get child if constant && constant.const_defined?(child)
         end
-      else
-        parent_klass
       end
+
+      default || parent_klass
     end
 
   end

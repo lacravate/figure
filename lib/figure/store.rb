@@ -42,7 +42,7 @@ class Figure
     end
 
     def default_store(data)
-      new_store(:default, data, self.class)
+      new_store :default, data, self.class
     end
 
   end
