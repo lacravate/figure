@@ -1,45 +1,14 @@
 class Figure
 
-  module DepartmentStore
+  require 'singleton'
+  require 'yaml'
 
-    private
+  require 'figure/department_store'
+  require 'figure/store'
 
-    def new_store(k, v={}, parent_klass=Figure::Store)
-      name = parent_klass.name.split('::').last == "Default" ? "Default" : k.to_s.capitalize
+  include Singleton
 
-      store_klass(parent_klass, name).new v
-    end
-
-    def store_klass(parent_klass, name)
-      Class.new(default_klass(parent_klass, name)) do |klass|
-        parent_klass.const_set name, klass
-      end
-    end
-
-    def default_klass(parent_klass, name)
-      figure, store, namespace, *depths = parent_klass.name.split('::')
-      if namespace && name != "Default"
-        store = Figure::Store.const_get namespace
-        depths.push('').inject(store) do |constant, child|
-          constant.const_get :Default
-        end
-      else
-        parent_klass
-      end
-    end
-
-  end
-
-  class Store < Hash
-
-    include DepartmentStore
-
-    def initialize(h={})
-      (h[:default] || h[:gaston]).tap do |default|
-        h.delete :default
-        h.delete :gaston
-        self[:default] = default_store(default) if default
-      end
+  include DepartmentStore
 
   class << self
 
@@ -53,20 +22,6 @@ class Figure
       @config_directory = Pathname.new path
     end
 
-    def merge!(h)
-      h.each do |k, v|
-        self[k] = if v.is_a? Hash
-          new_store k, v, self.class
-        elsif v.is_a? Array
-          v.map do |i|
-            i.is_a?(Hash) ? new_store(k, i, self.class) : i
-          end
-        else
-          v
-        end
-      end
-    end
-
     def method_missing(*args, m)
       if @instantiated
         super
@@ -76,17 +31,7 @@ class Figure
       end
     end
 
-    def default_store(data)
-      new_store(:default, data, self.class)
-    end
-
   end
-
-  include Singleton
-
-  include DepartmentStore
-
-  attr_reader :config
 
   def initialize
     @config_directory = self.class.config_directory
