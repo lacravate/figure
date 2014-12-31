@@ -1,14 +1,12 @@
-class Figure
+require 'singleton'
+require 'yaml'
 
-  require 'singleton'
-  require 'yaml'
-
-  require 'figure/department_store'
-  require 'figure/store'
+class Figure < Hash
 
   include Singleton
 
   include DepartmentStore
+  include Store
 
   class << self
 
@@ -54,8 +52,10 @@ class Figure
         figure_out instance_variable_get("@#{name}")
       end
 
-      self.class.define_singleton_method name.to_sym do
-        instance.send name
+  def []=(k, v)
+    super.tap do |value|
+      self.class.define_singleton_method k.to_sym do
+        instance.send k
       end
     end
   end

@@ -1,18 +1,6 @@
-class Figure
+class Figure < Hash
 
-  class Store < Hash
-
-    include DepartmentStore
-
-    def initialize(h={})
-      (h[:default] || h[:gaston]).tap do |default|
-        h.delete :default
-        h.delete :gaston
-        self[:default] = default_store(default) if default
-      end
-
-      merge! h
-    end
+  module Store
 
     def []=(k, v)
       unless respond_to? k

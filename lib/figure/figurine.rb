@@ -1,0 +1,18 @@
+class Figure < Hash
+
+  class Figurine < Hash
+
+    include DepartmentStore
+    include Store
+
+    def initialize(h={})
+      (h.delete(:default) || h.delete(:gaston)).tap do |default|
+        self[:default] = default_store default if default
+      end
+
+      merge! h
+    end
+
+  end
+
+end
