@@ -59,5 +59,9 @@ describe Figure do
 
       expect(described_class.plop.much.more.nested.defined.other_value).to eq('other_value')
     end
+
+    after {
+      described_class.plop.much.more.nested.defined[:value] = "value"
+    }
   end
 end
