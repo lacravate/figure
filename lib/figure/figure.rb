@@ -12,6 +12,10 @@ class Figure < Hash
 
     attr_reader :config_directory
 
+    def stores
+      @stores ||= {}
+    end
+
     def configure
       yield self
     end
