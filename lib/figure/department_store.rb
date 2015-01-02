@@ -5,7 +5,7 @@ class Figure < Hash
     private
 
     def new_store(k, v={}, parent_klass=Figure::Figurine)
-      store_klass(parent_klass, k.to_s.capitalize).new v
+      store_klass(parent_klass, k.to_s.capitalize).with(v).instance
     end
 
     def store_klass(parent_klass, name)
