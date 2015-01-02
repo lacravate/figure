@@ -4,15 +4,14 @@ class Figure < Hash
 
     def []=(k, v)
       unless respond_to? k
-        that = self
-        self.class.send :define_method, k, Proc.new { @current_default = that; self[k] }
+        self.class.send :define_method, k, Proc.new { figure_out(k) }
       end
 
       super
     end
 
     def default(k=nil)
-      k ? @current_default[k] : self[:default]
+      default_store && k ? default_store[k] : self[:default]
     end
 
     def merge!(h)
@@ -29,8 +28,8 @@ class Figure < Hash
       end
     end
 
-    def default_store(data)
-      new_store :default, data, self.class
+    def default_store
+      @default_store ||= self.class.ancestors[1].instance rescue nil
     end
 
   end

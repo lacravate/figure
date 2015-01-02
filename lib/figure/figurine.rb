@@ -13,9 +13,9 @@ class Figure < Hash
       @pattern ||= name.gsub 'Default', '[^:]+'
     end
 
-    def initialize(h={})
-      (h.delete(:default) || h.delete(:gaston)).tap do |default|
-        self[:default] = default_store default if default
+    def initialize
+      (h.delete(:default) || h.delete(:gaston)).tap do |default_data|
+        self[:default] = new_store :default, default_data, self.class if default_data
       end
 
       merge! h
