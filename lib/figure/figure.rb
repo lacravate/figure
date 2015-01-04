@@ -11,6 +11,7 @@ class Figure < Hash
   class << self
 
     attr_reader :config_directory
+    attr_accessor :env
 
     def stores
       @stores ||= {}
@@ -39,7 +40,6 @@ class Figure < Hash
 
   def initialize
     @config_directory = self.class.config_directory
-    @figure_out = {}
     store!
   end
 
@@ -47,7 +47,18 @@ class Figure < Hash
     config_files.each do |conf|
       name = conf.basename.to_s.sub('.yml', '').sub('.figure', '')
 
-      self[name] = new_store name, YAML.load(conf.read)
+      store = new_store name, YAML.load(conf.read)
+
+      self[name] = if self.class.env
+        if store.respond_to? self.class.env
+          store.send self.class.env
+        else
+          store.merge! self.class.env => {}
+          store[self.class.env]
+        end
+      else
+        store
+      end
     end
   end
 
@@ -60,14 +71,6 @@ class Figure < Hash
   end
 
   private
-
-  def figure_out(store)
-    @figure_out[store] ||= store.respond_to?(env.to_s) ? store.send(env) : store
-  end
-
-  def env
-    defined?(Rails) ? Rails.env : nil
-  end
 
   def config_directory
     @config_directory ||= defined?(Rails) ? Rails.root.join('config') : ascend_path

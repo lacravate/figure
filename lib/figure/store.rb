@@ -4,7 +4,7 @@ class Figure < Hash
 
     def []=(k, v)
       unless respond_to? k
-        self.class.send :define_method, k, Proc.new { figure_out(k) }
+        self.class.send :define_method, k, Proc.new { self[k] }
       end
 
       super

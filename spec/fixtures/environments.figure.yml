@@ -1,0 +1,19 @@
+:default:
+  :this:
+    :env:
+      :val: 'default'
+
+:test:
+  :this:
+    :env:
+      :val: 'test'
+
+:that:
+  :nested_env:
+    :default:
+      :nested_val: 'default_nested_val'
+      :other_nested_val: 'other_default_nested_val'
+    :test:
+      :nested_val: 'test'
+    :production:
+      :nested_val: 'production'

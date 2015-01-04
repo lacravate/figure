@@ -64,4 +64,28 @@ describe Figure do
       described_class.plop.much.more.nested.defined[:value] = "value"
     }
   end
+
+  describe 'figure_out' do
+    {test: 'test', development: 'default', production: 'default'}.each do |env, val|
+      let(:klass) { described_class.clone }
+
+      context "#{env} environment" do
+        before {
+          klass.configure do |config|
+            config.env = env
+          end
+        }
+
+        it "should return the right value environment aware" do
+          expect(klass.environments.this.env.val).to eq(val)
+        end
+
+        after {
+          klass.configure do |config|
+            config.env = nil
+          end
+        }
+      end
+    end
+  end
 end
