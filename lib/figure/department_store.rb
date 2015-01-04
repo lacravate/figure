@@ -10,14 +10,14 @@ class Figure < Hash
 
     def store_klass(parent_klass, name)
       Class.new(default_klass(parent_klass, name)).tap do |klass|
-        parent_klass.const_set name, klass
+        klass.label = "#{parent_klass.label}::#{name}"
         Figure.stores[klass.pattern] = klass if klass.default_type
       end
     end
 
     def default_klass(parent_klass, name)
       default_match = Figure.stores.keys.select do |k|
-        "#{parent_klass}::#{name}" =~ /^#{k}$/
+        "#{parent_klass.label}::#{name}" =~ /^#{k}$/
       end.reverse.first
 
       Figure.stores[default_match] || parent_klass

@@ -28,6 +28,10 @@ class Figure < Hash
       end
     end
 
+    def has_key?(key)
+      [key.to_s, key.to_sym].detect { |k| super(k) }
+    end
+
     def default_store
       @default_store ||= self.class.ancestors[1].instance rescue nil
     end

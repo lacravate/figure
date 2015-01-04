@@ -11,14 +11,14 @@ class Figure < Hash
 
     class << self
 
-      attr_accessor :with_data
+      attr_accessor :with_data, :label
 
       def default_type
-        @default_type ||= name.include? 'Default'
+        @default_type ||= label.include? 'Default'
       end
 
       def pattern
-        @pattern ||= name.gsub 'Default', '[^:]+'
+        @pattern ||= label.gsub 'Default', '[^:]+'
       end
 
       def with(data)
@@ -30,8 +30,8 @@ class Figure < Hash
     def initialize
       h = self.class.with_data || {}
 
-      (h.delete(:default) || h.delete(:gaston)).tap do |default_data|
-        self[:default] = new_store :default, default_data, self.class if default_data
+      (h.delete(:default) || h.delete(:gaston)).tap do |data|
+        self[:default] = new_store :default, data, self.class if data
       end
 
       merge! h
