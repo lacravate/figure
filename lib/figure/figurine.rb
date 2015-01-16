@@ -31,16 +31,41 @@ class Figure < Hash
 
     end
 
+    attr_accessor :forwarders
+
     def initialize
+      @forwarders = [self, self.class, Figure]
+
       h = self.class.with_data || {}
+      default_h, @forward = find_default h
 
-      (h.delete(:default) || h.delete(:gaston)).tap do |data|
-        self[:default] = new_store :default, data, self.class if data
-      end
-
+      self[:default] = new_store :default, default_h, self.class if default_h
       merge! h
     end
 
-  end
+    def forward!
+      self[ forward_response ]
+    end
 
+    def can_forward?
+      !!@forward
+    end
+
+    private
+
+    def find_default(h)
+      key = h.keys.detect { |k| k.to_s =~ /^(default|gaston)(_.+)?$/ }
+
+      [h.delete(key), $2 && $2[1..-1]]
+    end
+
+    def forward_response
+      responder.send @forward if responder
+    end
+
+    def responder
+      @responder ||= forwarders.detect { |s| s.respond_to? @forward }
+    end
+
+  end
 end

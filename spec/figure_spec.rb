@@ -65,26 +65,70 @@ describe Figure do
     }
   end
 
-  describe 'figure_out' do
-    {test: 'test', development: 'default', production: 'default'}.each do |env, val|
-      let(:klass) { described_class.clone }
+  describe 'forward' do
+    describe 'default bim' do
+      { bom: 'bim', plap: 'default_bim' }.each do |k, v|
+        context "#{k} bim" do
+          let(:klass) { described_class.clone }
 
-      context "#{env} environment" do
-        before {
-          klass.configure do |config|
-            config.env = env
+          before {
+            bim = Class.new { |c| c.send :define_method, :bim, ->{k} }
+            klass.plop.yet_another[:context].forwarders << bim.new
+          }
+
+          it "find the correct values taking plip value into account" do
+            expect(klass.plop.yet_another.context.name).to eq(v)
           end
-        }
+        end
+      end
+    end
 
-        it "should return the right value environment aware" do
-          expect(klass.environments.this.env.val).to eq(val)
+    describe 'default blip' do
+      { blop: 'blip', bim: 'default_name' }.each do |k, v|
+        context "#{k} blip" do
+          let(:klass) { described_class.clone }
+
+          before {
+            Figure::Figurine.send :define_singleton_method, :blip, -> {k}
+          }
+
+          it "find the correct values taking blip value into account" do
+            expect(klass.plop.other.context.name).to eq(v)
+          end
+        end
+      end
+    end
+
+    describe 'env' do
+      { test: { val: 'test', nested_val: 'nested_test' },
+        development: { val: 'default', nested_val: 'default_nested_val' },
+        production: { val: 'default', nested_val: 'nested_production' } }.each do |env, values|
+
+        let(:klass) { described_class.clone }
+
+        it "should be able to forward the call to a child" do
+          expect(klass.instance[:environments].can_forward?).to eq(true)
         end
 
-        after {
-          klass.configure do |config|
-            config.env = nil
-          end
-        }
+        context "#{env} environment" do
+          before {
+            described_class.configure do |config|
+              config.env = env
+            end
+          }
+
+          it "should return the right value environment aware" do
+            expect(klass.environments.this.env.val).to eq(values[:val])
+            expect(klass.environments.that.nested_env.nested_val).to eq(values[:nested_val])
+            expect(klass.environments.that.nested_env.other_nested_val).to eq('other_default_nested_val')
+           end
+
+          after {
+            described_class.configure do |config|
+              config.env = nil
+            end
+          }
+        end
       end
     end
   end

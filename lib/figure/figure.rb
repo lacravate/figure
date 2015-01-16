@@ -44,21 +44,8 @@ class Figure < Hash
   end
 
   def store!
-    config_files.each do |conf|
-      name = conf.basename.to_s.sub('.yml', '').sub('.figure', '')
-
-      store = new_store name, YAML.load(conf.read)
-
-      self[name] = if self.class.env
-        if store.respond_to? self.class.env
-          store.send self.class.env
-        else
-          store.merge! self.class.env => {}
-          store[self.class.env]
-        end
-      else
-        store
-      end
+    config_files do |name, conf|
+      self[name.to_sym] = new_store name, YAML.load(conf.read)
     end
   end
 
@@ -78,7 +65,10 @@ class Figure < Hash
 
   def config_files
     Dir[ *CONFIG_GLOBS.map { |glob| config_directory.join(glob) } ].map do |file|
-      Pathname.new file
+      path = Pathname.new file
+      name = path.basename.to_s.sub('.yml', '').sub('.figure', '')
+
+      yield name, path
     end
   end
 

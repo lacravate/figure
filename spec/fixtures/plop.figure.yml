@@ -20,3 +20,17 @@
     :nested:
       :defined:
         :value: 'value'
+
+:other:
+  :context:
+    :default_blip:
+      :name: 'default_name'
+    :blop:
+      :name: 'blip'
+
+:yet_another:
+  :context:
+    :default_bim:
+      :name: 'default_bim'
+    :bom:
+      :name: 'bim'
