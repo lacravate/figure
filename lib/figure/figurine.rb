@@ -21,8 +21,12 @@ class Figure < Hash
         @pattern ||= label.gsub 'Default', '[^:]+'
       end
 
-      def with(data)
-        self.tap { |s| s.with_data = data }
+      def with(options)
+        tap do |f|
+          options.each do |k, v|
+            f.send "with_#{k}=", v
+          end
+        end
       end
 
     end
