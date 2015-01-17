@@ -10,7 +10,7 @@ class Figure < Hash
 
   class << self
 
-    attr_reader :config_directory
+    attr_accessor :config_directories
     attr_accessor :env
 
     def stores
@@ -19,10 +19,6 @@ class Figure < Hash
 
     def configure
       yield self
-    end
-
-    def config_directory=(path)
-      @config_directory = Pathname.new path
     end
 
     def method_missing(*args, m)
@@ -38,8 +34,10 @@ class Figure < Hash
 
   CONFIG_GLOBS = %w|**/*figure.yml **/figure/*.yml **/gaston/*.yml|
 
+  self.config_directories ||= []
+
   def initialize
-    @config_directory = self.class.config_directory
+    @config_directories = self.class.config_directories.map { |path| Pathname.new path }
     store!
   end
 
@@ -59,12 +57,12 @@ class Figure < Hash
 
   private
 
-  def config_directory
-    @config_directory ||= defined?(Rails) ? Rails.root.join('config') : ascend_path
+  def config_directories
+    @config_directories ||= [ ascend_path ]
   end
 
   def config_files
-    Dir[ *CONFIG_GLOBS.map { |glob| config_directory.join(glob) } ].map do |file|
+    Dir[ *all_config_directories_globs ].each do |file|
       path = Pathname.new file
       name = path.basename.to_s.sub('.yml', '').sub('.figure', '')
 
@@ -72,10 +70,18 @@ class Figure < Hash
     end
   end
 
+  def all_config_directories_globs
+    config_directories.map do |dir|
+      CONFIG_GLOBS.map do |glob|
+        dir.join glob
+      end
+    end.flatten
+  end
+
   def ascend_path
     Pathname.new(__FILE__).ascend do |path|
-      @config_directory ||= path.join('config') if path.join('config').exist?
-      @config_directory ||= path if path.join('figure.yml').exist?
+      @config_directories << path.join('config') if path.join('config').exist?
+      @config_directories << path if path.join('figure.yml').exist?
     end
   end
 

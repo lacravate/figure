@@ -17,5 +17,6 @@ end
 require_relative '../lib/figure'
 
 Figure.configure do |config|
-  config.config_directory = File.join File.dirname(__FILE__), 'fixtures'
+  config.config_directories << File.join(File.dirname(__FILE__), 'fixtures')
+  config.config_directories << File.join(File.dirname(__FILE__), 'other_fixtures')
 end
