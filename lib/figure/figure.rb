@@ -10,8 +10,11 @@ class Figure < Hash
 
   class << self
 
-    attr_accessor :config_directories
     attr_accessor :env
+
+    def config_directories
+      @config_directories ||= []
+    end
 
     def stores
       @stores ||= {}
@@ -34,8 +37,6 @@ class Figure < Hash
 
   CONFIG_GLOBS = %w|**/*figure.yml **/figure/*.yml **/gaston/*.yml|
 
-  self.config_directories ||= []
-
   def initialize
     @config_directories = self.class.config_directories.map { |path| Pathname.new path }
     store!
@@ -55,19 +56,19 @@ class Figure < Hash
     end
   end
 
+  def config_files
+    Dir[ *all_config_directories_globs ].map do |file|
+      path = Pathname.new file
+      name = path.basename.to_s.sub('.yml', '').sub('.figure', '')
+
+      yield name, path if block_given?
+    end
+  end
+
   private
 
   def config_directories
     @config_directories ||= [ ascend_path ]
-  end
-
-  def config_files
-    Dir[ *all_config_directories_globs ].each do |file|
-      path = Pathname.new file
-      name = path.basename.to_s.sub('.yml', '').sub('.figure', '')
-
-      yield name, path
-    end
   end
 
   def all_config_directories_globs
