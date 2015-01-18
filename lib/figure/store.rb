@@ -39,6 +39,10 @@ class Figure < Hash
       [key.to_s, key.to_sym].detect { |k| super(k) }
     end
 
+    def figures
+      keys.tap { |f| f.concat default_store.keys if default_store }.uniq
+    end
+
     private
 
     def default_store

@@ -17,10 +17,15 @@ describe Figure do
       expect(described_class.plop.default.plop).to eq('plop')
     end
 
-    it "should find Gaston files to parse and get config from them" do
-      expect(described_class.gaston.default.is_parsed).to eq(true)
-      expect(described_class.gaston.namespace.is_parsed).to eq('namespace')
-      expect(described_class.gaston.namespace.inherits_gaston_default).to eq(true)
+    context "gaston" do
+      before {
+        Figure.env = :production
+      }
+
+      it "should find Gaston files to parse and get config from them" do
+        expect(described_class.gaston.is_parsed).to eq('production')
+        expect(described_class.gaston.production.inherits_gaston_default).to eq(true)
+      end
     end
   end
 
@@ -129,6 +134,46 @@ describe Figure do
             end
           }
         end
+      end
+    end
+  end
+
+  describe 'gaston' do
+    it "provides a Gaston class" do
+      expect(Gaston.ancestors).to include(Figure)
+    end
+
+    context "default env" do
+      let(:klass) { Gaston.clone }
+
+      before {
+        Figure.configure do |fig|
+          fig.env = :development
+        end
+      }
+
+      it "provides configuration as Gaston did" do
+        expect(klass.is_parsed).to eq(true)
+        expect(klass.inherits_gaston_default).to eq(true)
+        expect(klass.nested.thing).to eq('thing')
+        expect(klass.nested.stuff).to eq('stuff')
+      end
+    end
+
+    context "production" do
+      let(:klass) { Gaston.clone }
+
+      before {
+        Figure.configure do |fig|
+          fig.env = :production
+        end
+      }
+
+      it "provides configuration as Gaston did" do
+        expect(klass.is_parsed).to eq('production')
+        expect(klass.inherits_gaston_default).to eq(true)
+        expect(klass.nested.thing).to eq('production')
+        expect(klass.nested.stuff).to eq('stuff')
       end
     end
   end

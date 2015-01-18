@@ -1,6 +1,11 @@
 :gaston:
   :is_parsed: true
   :inherits_gaston_default: true
+  :nested:
+    :thing: 'thing'
+    :stuff: 'stuff'
 
-:namespace:
-  :is_parsed: 'namespace'
+:production:
+  :is_parsed: 'production'
+  :nested:
+    :thing: 'production'

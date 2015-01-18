@@ -55,8 +55,9 @@ class Figure < Hash
 
     def find_default(h)
       key = h.keys.detect { |k| k.to_s =~ /^(default|gaston)(_.+)?$/ }
+      forward = $1.to_s == 'gaston' ? 'env' : ($2 && $2[1..-1])
 
-      [h.delete(key), $2 && $2[1..-1]]
+      [h.delete(key), forward]
     end
 
     def forward_response
