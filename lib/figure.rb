@@ -27,8 +27,17 @@ class Figure < Hash
   end
 end
 
-if defined?(Rails)
-  Figure.configure do |fig|
-    fig.env = Rails.env
+class Figure < Hash
+  class RailsInitializer
+    def self.initialize!
+      Figure.configure do |config|
+        config.responders << Rails
+        config.config_directories << Rails.root.join('config')
+      end
+    end
   end
+end
+
+if defined? Rails
+  Figure.initializers << Figure::RailsInitializer
 end

@@ -177,5 +177,85 @@ describe Figure do
         expect(klass.nested.stuff).to eq('stuff')
       end
     end
+
+    context "production provided by Rails" do
+      before {
+        class Rails
+          class << self
+            attr_accessor :env
+            def root; Pathname.new 'spec'; end
+          end
+        end
+
+        Rails.env = 'production'
+
+        FileUtils.symlink 'fixtures', 'spec/config'
+        Figure::RailsInitializer.initialize!
+      }
+
+      it "provides configuration as Gaston did" do
+        expect(klass.is_parsed).to eq('production')
+        expect(klass.inherits_gaston_default).to eq(true)
+        expect(klass.nested.thing).to eq('production')
+        expect(klass.nested.stuff).to eq('stuff')
+      end
+    end
+
+    after {
+      Figure.configure do |fig|
+        fig.env = nil
+      end
+
+      FileUtils.rm_f 'spec/config'
+      Figure.responders.delete Rails if defined? Rails
+    }
+  end
+
+  describe "Rails" do
+    before {
+      class Rails
+        class << self
+          attr_accessor :env
+          def root; Pathname.new 'spec'; end
+        end
+      end
+
+      Rails.env = 'production'
+
+      FileUtils.symlink 'fixtures', 'spec/config'
+      Figure::RailsInitializer.initialize!
+    }
+
+    let(:figure) { Figure.clone }
+    let(:gaston) { Gaston.clone }
+
+    it "retrieves values according to Rails.env" do
+      expect(figure.environments.this.env.val).to eq('default')
+      expect(figure.environments.that.nested_env.nested_val).to eq('nested_production')
+      expect(gaston.is_parsed).to eq('production')
+      expect(gaston.inherits_gaston_default).to eq(true)
+      expect(gaston.nested.thing).to eq('production')
+      expect(gaston.nested.stuff).to eq('stuff')
+      expect(gaston.gerard.is_found_here_too).to eq(true)
+      expect(gaston.gerard.is_gaston_s).to eq('brother')
+      expect(gaston.gerard.nests.in).to eq("gerard's place")
+      expect(figure.plop.foo.plop).to eq('plawp')
+      expect(figure.plop.foo.plip).to eq('pleep')
+      expect(figure.plop.bar.plop).to eq('plowp')
+      expect(figure.plop.bar.plip).to eq(figure.plop.default.plip)
+      expect(figure.plop.baz.plop).to eq(figure.plop.default.plop)
+      expect(figure.plop.baz.plip).to eq(figure.plop.default.plip)
+      expect(figure.plop.default.more.nested.inherited.value).to eq('inherited')
+      expect(figure.plop.much.more.nested.defined.value).to eq('value')
+      expect(figure.plop.much.more.nested.inherited.value).to eq(figure.plop.default.more.nested.inherited.value)
+    end
+
+    after {
+      Figure.responders.delete Rails if defined? ::Rails
+      Object.send :remove_const, :Rails if defined? ::Rails
+
+      FileUtils.rm_f 'spec/config'
+      FileUtils.rm_f 'spec/fixtures/fixtures'
+    }
   end
 end
