@@ -79,12 +79,14 @@ describe Figure do
 
           before {
             bim = Class.new { |c| c.send :define_method, :bim, ->{k} }
-            klass.plop.yet_another[:context].forwarders << bim.new
+            Figure.responders << bim.new
           }
 
           it "find the correct values taking plip value into account" do
             expect(klass.plop.yet_another.context.name).to eq(v)
           end
+
+          after { Figure.responders.clear }
         end
       end
     end
@@ -127,7 +129,7 @@ describe Figure do
             expect(klass.environments.this.env.val).to eq(values[:val])
             expect(klass.environments.that.nested_env.nested_val).to eq(values[:nested_val])
             expect(klass.environments.that.nested_env.other_nested_val).to eq('other_default_nested_val')
-           end
+          end
 
           after {
             described_class.configure do |config|
@@ -161,9 +163,7 @@ describe Figure do
       end
     end
 
-    context "production" do
-      let(:klass) { Gaston.clone }
-
+    context "production provided by Figure" do
       before {
         Figure.configure do |fig|
           fig.env = :production

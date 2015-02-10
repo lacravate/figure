@@ -20,6 +20,10 @@ class Figure < Hash
       @config_directories ||= []
     end
 
+    def responders
+      @responders ||= []
+    end
+
     def stores
       @stores ||= {}
     end

@@ -31,11 +31,7 @@ class Figure < Hash
 
     end
 
-    attr_accessor :forwarders
-
     def initialize
-      @forwarders = [self, self.class, Figure]
-
       h = self.class.with_data || {}
       default_h, @forward = find_default h
 
@@ -44,11 +40,15 @@ class Figure < Hash
     end
 
     def forward!
-      self[ forward_response ]
+      self[ has_key? forward_response ]
     end
 
     def can_forward?
       !!@forward
+    end
+
+    def responders
+      Figure.responders.dup.concat [self, self.class, Figure]
     end
 
     private
@@ -65,7 +65,7 @@ class Figure < Hash
     end
 
     def responder
-      @responder ||= forwarders.detect { |s| s.respond_to? @forward }
+      responders.detect { |s| s.respond_to?(@forward) && s.send(@forward)}
     end
 
   end
