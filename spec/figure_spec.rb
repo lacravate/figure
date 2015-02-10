@@ -19,12 +19,13 @@ describe Figure do
 
     context "gaston" do
       before {
-        Figure.env = :production
+        Figure.env = 'production'
       }
 
       it "should find Gaston files to parse and get config from them" do
         expect(described_class.gaston.is_parsed).to eq('production')
         expect(described_class.gaston.production.inherits_gaston_default).to eq(true)
+        expect(described_class.gerard.production.gerard.is_found_here_too).to eq(true)
       end
     end
   end
@@ -139,13 +140,13 @@ describe Figure do
   end
 
   describe 'gaston' do
+    let(:klass) { Gaston.clone }
+
     it "provides a Gaston class" do
-      expect(Gaston.ancestors).to include(Figure)
+      expect(defined? Gaston).to eq('constant')
     end
 
     context "default env" do
-      let(:klass) { Gaston.clone }
-
       before {
         Figure.configure do |fig|
           fig.env = :development

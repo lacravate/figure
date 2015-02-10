@@ -12,6 +12,10 @@ class Figure < Hash
 
     attr_accessor :env
 
+    def initializers
+      @initializers ||= []
+    end
+
     def config_directories
       @config_directories ||= []
     end
@@ -38,6 +42,7 @@ class Figure < Hash
   CONFIG_GLOBS = %w|**/*figure.yml **/figure/*.yml **/gaston/*.yml|
 
   def initialize
+    self.class.initializers.each &:initialize!
     @config_directories = self.class.config_directories.map { |path| Pathname.new path }
     store!
   end

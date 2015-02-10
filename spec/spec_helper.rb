@@ -20,3 +20,5 @@ Figure.configure do |config|
   config.config_directories << File.join(File.dirname(__FILE__), 'fixtures')
   config.config_directories << File.join(File.dirname(__FILE__), 'other_fixtures')
 end
+
+Figure::GastonInitializer.initialize!

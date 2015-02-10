@@ -1,0 +1,11 @@
+:gaston:
+  :gerard:
+    :is_found_here_too: true
+    :is_gaston_s: 'brother'
+    :nests:
+      :in: "gaston's place"
+
+:production:
+  :gerard:
+    :nests:
+      :in: "gerard's place"
