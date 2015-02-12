@@ -47,10 +47,6 @@ class Figure < Hash
       !!@forward
     end
 
-    def responders
-      Figure.responders.dup.concat [self, self.class, Figure]
-    end
-
     private
 
     def find_default(h)
@@ -61,11 +57,15 @@ class Figure < Hash
     end
 
     def forward_response
-      responder.send @forward if responder
+      (r = responder) && r.send(@forward)
     end
 
     def responder
       responders.detect { |s| s.respond_to?(@forward) && s.send(@forward)}
+    end
+
+    def responders
+      Figure.responders.dup.concat [self, self.class, Figure]
     end
 
   end
