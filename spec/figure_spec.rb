@@ -108,9 +108,9 @@ describe Figure do
     end
 
     describe 'env' do
-      { test: { val: 'test', nested_val: 'nested_test' },
-        development: { val: 'default', nested_val: 'default_nested_val' },
-        production: { val: 'default', nested_val: 'nested_production' } }.each do |env, values|
+      { test: { val: 'test', nested_val: 'nested_test', thingy: 'bloh' },
+        development: { val: 'default', nested_val: 'default_nested_val', thingy: nil },
+        production: { val: 'default', nested_val: 'nested_production', thingy: 'blah' } }.each do |env, values|
 
         let(:klass) { described_class.clone }
 
@@ -128,6 +128,7 @@ describe Figure do
           it "should return the right value environment aware" do
             expect(klass.environments.this.env.val).to eq(values[:val])
             expect(klass.environments.that.nested_env.nested_val).to eq(values[:nested_val])
+            expect((klass.environments.that.nested_env.thingy rescue nil)).to eq(values[:thingy])
             expect(klass.environments.that.nested_env.other_nested_val).to eq('other_default_nested_val')
           end
 
@@ -232,6 +233,7 @@ describe Figure do
     it "retrieves values according to Rails.env" do
       expect(figure.environments.this.env.val).to eq('default')
       expect(figure.environments.that.nested_env.nested_val).to eq('nested_production')
+      expect(figure.environments.that.nested_env.thingy).to eq('blah')
       expect(gaston.is_parsed).to eq('production')
       expect(gaston.inherits_gaston_default).to eq(true)
       expect(gaston.nested.thing).to eq('production')

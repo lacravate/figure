@@ -35,12 +35,20 @@ class Figure < Hash
       end
     end
 
+    def complete_defaults
+      if default_store && default_store.can_forward? && (default_store.forward! rescue false)
+        default_store.forward!.figures.reject { |l| respond_to?(l) }.each do |l|
+          self.class.send :define_method, l, -> { default_store.forward![l] }
+        end
+      end
+    end
+
     def has_key?(key)
       [key.to_s, key.to_sym].detect { |k| super(k) }
     end
 
     def figures
-      keys.tap { |f| f.concat default_store.keys if default_store }.uniq
+      keys.tap { |f| f.concat default_store.figures if default_store }.uniq
     end
 
     private

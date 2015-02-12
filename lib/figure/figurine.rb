@@ -37,6 +37,7 @@ class Figure < Hash
 
       self[:default] = new_store :default, default_h, self.class if default_h
       merge! h
+      complete_defaults
     end
 
     def forward!

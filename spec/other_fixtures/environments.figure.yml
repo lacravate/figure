@@ -12,7 +12,15 @@
       :production:
         :nested_val: 'nested_production'
 
+:production:
+  :that:
+    :nested_env:
+      :thingy: 'blah'
+
 :test:
+  :that:
+    :nested_env:
+      :thingy: 'bloh'
   :this:
     :env:
       :val: 'test'
