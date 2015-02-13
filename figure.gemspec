@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email         = ["david.elbaz@af83.com"]
   s.homepage      = "https://github.com/lacravate/figure"
   s.summary       = "Figure...'s out configuration from YAML files"
-  s.description   = "A classic configuration store, that turns out Hash definitions to methods, with a (so far very unsatisfactory) management of environment (and Rails environment)"
+  s.description   = "A classic configuration store, that turns out Hash definitions to methods, with a management of environment (and Rails environment)"
 
   s.files         = `git ls-files app lib`.split("\n")
   s.platform      = Gem::Platform::RUBY
